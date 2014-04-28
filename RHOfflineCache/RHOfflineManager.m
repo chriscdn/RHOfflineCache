@@ -7,16 +7,20 @@
 
 #define kOfflineImage [UIImage imageNamed:@"offline_image"]
 
+#import "RHManagedObject+legacy.h"
 #import "RHOfflineManager.h"
 #import "RHOfflineCache.h"
 #import "AFHTTPRequestOperation.h"
 
 @interface RHOfflineManager()
+
 @property (nonatomic, strong) NSCache *memoryCache;
 @property (nonatomic, strong) NSMutableDictionary *operations;
+
 -(void)purgeOldStuff;
 -(void)removeOperation:(NSString *)url;
 -(BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
+
 @end
 
 @implementation RHOfflineManager
