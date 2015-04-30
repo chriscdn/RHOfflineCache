@@ -38,54 +38,54 @@
 
 -(id)init {
     if (self=[super init]) {
-		self.memoryCache = [NSCache new];
-		self.operations = [NSMutableDictionary new];
+        self.memoryCache = [NSCache new];
+        self.operations = [NSMutableDictionary new];
         [self purgeOldStuff];
     }
-
+    
     return self;
 }
 
 -(NSNumber *)cacheSize {
-	return [RHOfflineCache aggregateWithType:RHAggregateSum key:@"size" predicate:nil defaultValue:nil];
+    return [RHOfflineCache aggregateWithType:RHAggregateSum key:@"size" predicate:nil defaultValue:nil];
 }
 
 -(NSString *)cacheSizeMB {
-	NSNumber *bytes = [self cacheSize];
-	float mb = [bytes floatValue]/(1024*1024);
-	return [NSString stringWithFormat:@"%.1f MB", mb];
+    NSNumber *bytes = [self cacheSize];
+    float mb = [bytes floatValue]/(1024*1024);
+    return [NSString stringWithFormat:@"%.1f MB", mb];
 }
 
 -(void)purgeOldStuff {
     NSDate *fourWeeksAgo = [NSDate dateWithTimeIntervalSinceNow:-2419200];
     NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"lastAccessDate < %@", fourWeeksAgo]];
-
+    
     for (RHOfflineCache *item in items) {
         [item delete];
     }
-
+    
     [RHOfflineCache commit];
 }
 
 -(BOOL)isCacheable:(NSString *)url {
-
-	NSURL *myurl = [NSURL URLWithString:url];
-	NSString *ext = [myurl pathExtension];
-
-	NSArray *allowableTypes = @[@"png",@"jpg",@"jpeg",@"gif,",@"mov",@"mkv",@"mp4",@"mpg",@"doc",@"docx",@"xls",@"xlsx",@"ppt",@"pptx",@"pdf",@"txt"];
-
-	return [allowableTypes containsObject:ext];
-
+    
+    NSURL *myurl = [NSURL URLWithString:url];
+    NSString *ext = [myurl pathExtension];
+    
+    NSArray *allowableTypes = @[@"png",@"jpg",@"jpeg",@"gif,",@"mov",@"mkv",@"mp4",@"mpg",@"doc",@"docx",@"xls",@"xlsx",@"ppt",@"pptx",@"pdf",@"txt"];
+    
+    return [allowableTypes containsObject:ext];
+    
 }
 
 -(void)flushCache {
-	[self.memoryCache removeAllObjects];
-	[RHOfflineCache deleteAll];
-	[RHOfflineCache commit];
+    [self.memoryCache removeAllObjects];
+    [RHOfflineCache deleteAll];
+    [RHOfflineCache commit];
 }
 
 -(BOOL)isDownloading:(NSString *)url {
-	return ([self.operations objectForKey:url] != nil);
+    return ([self.operations objectForKey:url] != nil);
 }
 
 -(NSArray *)cachedURLs {
@@ -93,48 +93,48 @@
 }
 
 -(void)removeOperation:(NSString *)url {
-	[self.operations removeObjectForKey:url];
+    [self.operations removeObjectForKey:url];
 }
 
 -(void)cancelOperation:(NSString *)url {
-	AFHTTPRequestOperation *operation = [self.operations objectForKey:url];
-	if (operation) {
-		[operation cancel];
-	}
+    AFHTTPRequestOperation *operation = [self.operations objectForKey:url];
+    if (operation) {
+        [operation cancel];
+    }
 }
 
 -(NSString *)sizeWithURL:(NSString *)url {
-	RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-	if (item) {
-		float mb = [item.size floatValue]/(1024*1024);
-		return [NSString stringWithFormat:@"%.1f MB", mb];
-	}
-	return nil;
+    RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+    if (item) {
+        float mb = [item.size floatValue]/(1024*1024);
+        return [NSString stringWithFormat:@"%.1f MB", mb];
+    }
+    return nil;
 }
 
 -(void)deleteWithURL:(NSString *)url {
-	[[RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]] delete];
-	// [RHOfflineCache commit];
+    [[RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]] delete];
+    // [RHOfflineCache commit];
 }
 
 -(BOOL)isDownloaded:(NSString *)url {
-	return [self isCached:url];
+    return [self isCached:url];
 }
 
 -(BOOL)isCached:(NSString *)url {
-	if ([self.memoryCache objectForKey:url] != nil) {
-		return YES;
-	}
-
-	NSUInteger count = [RHOfflineCache countWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+    if ([self.memoryCache objectForKey:url] != nil) {
+        return YES;
+    }
+    
+    NSUInteger count = [RHOfflineCache countWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
     return ( count > 0 );
 }
 
 -(NSURL *)localURLWithURL:(NSString *)url {
-	if ([self isCached:url]) {
-		return [self localURLWithURL:url namespace:nil progress:nil success:nil failure:nil];
-	}
-	return nil;
+    if ([self isCached:url]) {
+        return [self localURLWithURL:url namespace:nil progress:nil success:nil failure:nil];
+    }
+    return nil;
 }
 
 -(NSURL *)localURLWithURL:(NSString *)url progress:(RHOfflineManagerProgressBlock)progress success:(RHOfflineManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
@@ -142,165 +142,188 @@
 }
 
 -(NSURL *)localURLWithURL:(NSString *)url namespace:(NSString *)namespace progress:(RHOfflineManagerProgressBlock)progress success:(RHOfflineManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
-
-	RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-	item.lastAccessDate = [NSDate date];
-
-	if (item && [item cachedFileExists]) {
-		if (success) {
-			success([item localURL]);
-		}
-
-		return [item localURL];
-
-	} else if ([self isDownloading:url]) {
-
+    
+    RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+    item.lastAccessDate = [NSDate date];
+    
+    if (item && [item cachedFileExists]) {
+        if (success) {
+            success([item localURL]);
+        }
+        
+        return [item localURL];
+        
+    } else if ([self isDownloading:url]) {
+        
         return nil;
-
+        
     } else {
-
-		NSURLRequest *nsurlrequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        
+        NSURLRequest *nsurlrequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:nsurlrequest];
-
-		[operation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-			float progressValue = (float)totalBytesRead / (float)totalBytesExpectedToRead;
-
-			if (progress) {
-				progress(progressValue);
-			}
-		}];
-
-        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *responseObject) {
-			RHOfflineCache *item = [RHOfflineCache newOrExistingEntityWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-
-			NSString *ext = [url pathExtension];
-			[item setFilename:[NSString stringWithFormat:@"%@.%@", [RHOfflineCache UUID], ext]];
-			[item setUrl:url];
-			[item setSize:[NSNumber numberWithInteger:responseObject.length]];
-            [item setNamespace:namespace];
-
-            [item buzz];
-
-			NSError *error;
-
-			[responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error];
-
-			[self addSkipBackupAttributeToItemAtURL:[item localURL]];
-
-			// Only commit once the file is safe on the filesystem.
-			[RHOfflineCache commit];
-
-            if (success) {
-				success([item localURL]);
+        
+        [operation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
+            float progressValue = (float)totalBytesRead / (float)totalBytesExpectedToRead;
+            
+            if (progress) {
+                progress(progressValue);
             }
-
-			[self removeOperation:url];
+        }];
+        
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *responseObject) {
+            RHOfflineCache *item = [RHOfflineCache newOrExistingEntityWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+            
+            NSString *ext = [url pathExtension];
+            [item setFilename:[NSString stringWithFormat:@"%@.%@", [RHOfflineCache UUID], ext]];
+            [item setUrl:url];
+            [item setSize:[NSNumber numberWithInteger:responseObject.length]];
+            [item setNamespace:namespace];
+            
+            [item buzz];
+            
+            NSError *error;
+            
+            [responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error];
+            
+            [self addSkipBackupAttributeToItemAtURL:[item localURL]];
+            
+            // Only commit once the file is safe on the filesystem.
+            [RHOfflineCache commit];
+            
+            if (success) {
+                success([item localURL]);
+            }
+            
+            [self removeOperation:url];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			dispatch_async(dispatch_get_main_queue(), ^{
-				if (failure) {
-					failure(error);
-				}
-			});
-
-			[self removeOperation:url];
-		}];
-
-		[self cancelOperation:url];
-		[self.operations setObject:operation forKey:url];
-		[operation start];
-
-		return nil;
-	}
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (failure) {
+                    failure(error);
+                }
+            });
+            
+            [self removeOperation:url];
+        }];
+        
+        [self cancelOperation:url];
+        [self.operations setObject:operation forKey:url];
+        [operation start];
+        
+        return nil;
+    }
 }
 
 -(UIImage *)imageWithURL:(NSString *)url success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
+    return [self imageWithURL:url success:success failure:failure];
+}
 
-	UIImage *image = [self.memoryCache objectForKey:url];
-
-	if (image) {
-		return image;
-	}
-
-	RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-	item.lastAccessDate = [NSDate date];
-
+-(UIImage *)imageWithURL:(NSString *)url placeholder:(UIImage *)placeholder success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
+    
+    UIImage *image = [self.memoryCache objectForKey:url];
+    
+    if (image) {
+        return image;
+    }
+    
+    RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+    item.lastAccessDate = [NSDate date];
+    
     if (item && [item cachedFileExists]) {
-
-		image = [item image];
-
-		if (image) {
-			[self.memoryCache setObject:image forKey:url];
-			return image;
+        
+        image = [item image];
+        
+        if (image) {
+            [self.memoryCache setObject:image forKey:url];
+            return image;
         } else {
-			return kOfflineImage;
-		}
-
-	} else {
-
+            return placeholder;
+        }
+        
+    } else {
+        
         NSURLRequest *nsurlrequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:nsurlrequest];
-
-		// disable caching
-		[operation setCacheResponseBlock:^NSCachedURLResponse *(NSURLConnection *connection, NSCachedURLResponse *cachedResponse) {
-			return nil;
-		}];
-
+        
+        // disable caching
+        [operation setCacheResponseBlock:^NSCachedURLResponse *(NSURLConnection *connection, NSCachedURLResponse *cachedResponse) {
+            return nil;
+        }];
+        
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *responseObject) {
             // It might be more efficient to put the core data and file write into a separate thread, and just call success()
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-				UIImage *image = [UIImage imageWithData:responseObject];
-
-				// The existence of image isn't guaranteed
-				if ( image ) {
-					RHOfflineCache *item = [RHOfflineCache newOrExistingEntityWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-
-					NSString *ext = [url pathExtension];
-					[item setFilename:[NSString stringWithFormat:@"%@.%@", [RHOfflineCache UUID], ext]];
-					[item setUrl:url];
-					[item setSize:[NSNumber numberWithInteger:responseObject.length]];
-
-					NSError *error;
-					[responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error];
-					[self addSkipBackupAttributeToItemAtURL:[item localURL]];
-
-					// Only commit once the file is safe on the filesystem.
-					[RHOfflineCache commit];
-				}
+                
+                UIImage *image = [UIImage imageWithData:responseObject];
+                
+                // The existence of image isn't guaranteed
+                if ( image ) {
+                    RHOfflineCache *item = [RHOfflineCache newOrExistingEntityWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+                    
+                    NSString *ext = [url pathExtension];
+                    [item setFilename:[NSString stringWithFormat:@"%@.%@", [RHOfflineCache UUID], ext]];
+                    [item setUrl:url];
+                    [item setSize:[NSNumber numberWithInteger:responseObject.length]];
+                    
+                    NSError *error;
+                    [responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error];
+                    [self addSkipBackupAttributeToItemAtURL:[item localURL]];
+                    
+                    // Only commit once the file is safe on the filesystem.
+                    [RHOfflineCache commit];
+                }
             });
-
+            
             if (success) {
                 UIImage *image = [UIImage imageWithData:responseObject];
-				if (image) {
-					[self.memoryCache setObject:image forKey:url];
-					success(image);
-				}
+                if (image) {
+                    [self.memoryCache setObject:image forKey:url];
+                    success(image);
+                }
             }
-
-			[self removeOperation:url];
+            
+            [self removeOperation:url];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             if (failure) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     failure(error);
                 });
             }
-
-			[self removeOperation:url];
+            
+            [self removeOperation:url];
         }];
-
-		[self cancelOperation:url];
-		[self.operations setObject:operation forKey:url];
+        
+        [self cancelOperation:url];
+        [self.operations setObject:operation forKey:url];
         [operation start];
-
-        return kOfflineImage;
+        
+        return placeholder;
     }
+}
+
+-(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView {
+    [self setURL:url toImageView:imageView placeholder:kOfflineImage];
+}
+
+-(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView placeholder:(UIImage *)placeholder {
+    
+  //  CGRect b = imageView.bounds;
+  //  CGRect f = imageView.frame;
+    
+    [imageView setImage:[self imageWithURL:url
+                         placeholder:placeholder
+                                   success:^(UIImage *image) {
+                                       [imageView setImage:image];
+                                   } failure:^(NSError *error) {
+                                       
+                                   }]];
+    
 }
 
 // https://developer.apple.com/library/ios/qa/qa1719/_index.html
 // TODO: Move this to a category
 -(BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL {
     assert([[NSFileManager defaultManager] fileExistsAtPath:[URL path]]);
-
+    
     NSError *error = nil;
     BOOL success = [URL setResourceValue:@YES
                                   forKey:NSURLIsExcludedFromBackupKey error: &error];

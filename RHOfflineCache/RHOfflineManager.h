@@ -32,5 +32,8 @@ typedef void (^RHOfflineManagerErrorBlock)(NSError *error);
 -(NSURL *)localURLWithURL:(NSString *)url progress:(RHOfflineManagerProgressBlock)progress success:(RHOfflineManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure;
 -(NSURL *)localURLWithURL:(NSString *)url namespace:(NSString *)namespace progress:(RHOfflineManagerProgressBlock)progress success:(RHOfflineManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure;
 -(UIImage *)imageWithURL:(NSString *)url success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure;
+-(UIImage *)imageWithURL:(NSString *)url placeholder:(UIImage *)placeholder success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure;
+-(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView;
+-(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView placeholder:(UIImage *)placeholder;
 
 @end
