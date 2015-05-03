@@ -214,7 +214,7 @@
 }
 
 -(UIImage *)imageWithURL:(NSString *)url success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
-    return [self imageWithURL:url success:success failure:failure];
+    return [self imageWithURL:url placeholder:kOfflineImage success:success failure:failure];
 }
 
 -(UIImage *)imageWithURL:(NSString *)url placeholder:(UIImage *)placeholder success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
