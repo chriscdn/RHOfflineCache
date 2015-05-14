@@ -19,7 +19,7 @@
     // http://www.mikeash.com/pyblog/friday-qa-2009-05-22-objective-c-class-loading-and-initialization.html
     if (self == [RHOfflineCache class] ) {
         
-        const static NSInteger schemaVersion = 2;
+        const static NSInteger schemaVersion = 3;
         
         NSString *key = [NSString stringWithFormat:@"RHOfflineManagerSchemaVersion-%@", [self modelName]];
         NSInteger version = [[NSUserDefaults standardUserDefaults] integerForKey:key];

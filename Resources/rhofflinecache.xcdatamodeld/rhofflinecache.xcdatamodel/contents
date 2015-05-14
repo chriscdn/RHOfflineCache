@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12D78" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="RHOfflineCacheEntity" representedClassName="RHOfflineCache" syncable="YES">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="RHOfflineCache" representedClassName="RHOfflineCache" syncable="YES">
         <attribute name="createDate" attributeType="Date" syncable="YES"/>
         <attribute name="filename" attributeType="String" syncable="YES"/>
         <attribute name="lastAccessDate" optional="YES" attributeType="Date" syncable="YES"/>
@@ -9,6 +9,6 @@
         <attribute name="url" attributeType="String" indexed="YES" syncable="YES"/>
     </entity>
     <elements>
-        <element name="RHOfflineCacheEntity" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="RHOfflineCache" positionX="0" positionY="0" width="128" height="135"/>
     </elements>
 </model>

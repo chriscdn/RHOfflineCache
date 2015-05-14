@@ -8,9 +8,9 @@
 #define kRHOfflineCacheInsert @"RHOfflineCacheInsert"
 #define kRHOfflineCacheDelete @"RHOfflineCacheDelete"
 
-#import "RHOfflineCacheEntity.h"
+#import "_RHOfflineCache.h"
 
-@interface RHOfflineCache : RHOfflineCacheEntity
+@interface RHOfflineCache : _RHOfflineCache
 
 +(NSString *)UUID;
 

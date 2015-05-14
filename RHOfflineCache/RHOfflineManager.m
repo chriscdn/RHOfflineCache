@@ -68,14 +68,12 @@
 }
 
 -(BOOL)isCacheable:(NSString *)url {
-    
     NSURL *myurl = [NSURL URLWithString:url];
     NSString *ext = [myurl pathExtension];
     
     NSArray *allowableTypes = @[@"png",@"jpg",@"jpeg",@"gif,",@"mov",@"mkv",@"mp4",@"mpg",@"doc",@"docx",@"xls",@"xlsx",@"ppt",@"pptx",@"pdf",@"txt"];
     
     return [allowableTypes containsObject:ext];
-    
 }
 
 -(void)flushCache {
@@ -141,7 +139,11 @@
     return [self localURLWithURL:url namespace:nil progress:progress success:success failure:failure];
 }
 
--(NSURL *)localURLWithURL:(NSString *)url namespace:(NSString *)namespace progress:(RHOfflineManagerProgressBlock)progress success:(RHOfflineManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
+-(NSURL *)localURLWithURL:(NSString *)url
+                namespace:(NSString *)namespace
+                 progress:(RHOfflineManagerProgressBlock)progress
+                  success:(RHOfflineManagerSuccessBlock)success
+                  failure:(RHOfflineManagerErrorBlock)failure {
     
     RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
     item.lastAccessDate = [NSDate date];
@@ -213,11 +215,16 @@
     }
 }
 
--(UIImage *)imageWithURL:(NSString *)url success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
+-(UIImage *)imageWithURL:(NSString *)url
+                 success:(RHOfflineImageManagerSuccessBlock)success
+                 failure:(RHOfflineManagerErrorBlock)failure {
     return [self imageWithURL:url placeholder:kOfflineImage success:success failure:failure];
 }
 
--(UIImage *)imageWithURL:(NSString *)url placeholder:(UIImage *)placeholder success:(RHOfflineImageManagerSuccessBlock)success failure:(RHOfflineManagerErrorBlock)failure {
+-(UIImage *)imageWithURL:(NSString *)url
+             placeholder:(UIImage *)placeholder
+                 success:(RHOfflineImageManagerSuccessBlock)success
+                 failure:(RHOfflineManagerErrorBlock)failure {
     
     UIImage *image = [self.memoryCache objectForKey:url];
     
@@ -305,10 +312,7 @@
 }
 
 -(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView placeholder:(UIImage *)placeholder {
-    
-  //  CGRect b = imageView.bounds;
-  //  CGRect f = imageView.frame;
-    
+
     [imageView setImage:[self imageWithURL:url
                          placeholder:placeholder
                                    success:^(UIImage *image) {
