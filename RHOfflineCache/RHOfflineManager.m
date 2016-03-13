@@ -1,11 +1,27 @@
 //
-//  RHImageManager.m
-//  TrackMyTour
+//  RHOfflineManager.m
 //
-//  Created by Christopher Meyer on 2012-10-11.
-//  Copyright (c) 2012 Red House Consulting GmbH. All rights reserved.
-
-#define kOfflineImage [UIImage imageNamed:@"offline_image"]
+//  Copyright (C) 2016 by Christopher Meyer
+//  http://schwiiz.org/
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
 #import "RHManagedObject+legacy.h"
 #import "RHOfflineManager.h"
@@ -24,8 +40,6 @@
 @end
 
 @implementation RHOfflineManager
-@synthesize memoryCache;
-@synthesize operations;
 
 +(RHOfflineManager *)sharedInstance {
     static dispatch_once_t once;
@@ -112,7 +126,6 @@
 
 -(void)deleteWithURL:(NSString *)url {
     [[RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]] delete];
-    // [RHOfflineCache commit];
 }
 
 -(BOOL)isDownloaded:(NSString *)url {
@@ -250,11 +263,9 @@
         
         NSURLRequest *nsurlrequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:nsurlrequest];
-        
+
         // disable caching
-        [operation setCacheResponseBlock:^NSCachedURLResponse *(NSURLConnection *connection, NSCachedURLResponse *cachedResponse) {
-            return nil;
-        }];
+        [operation setCacheResponseBlock:nil];
         
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *responseObject) {
             // It might be more efficient to put the core data and file write into a separate thread, and just call success()
@@ -263,7 +274,7 @@
                 UIImage *image = [UIImage imageWithData:responseObject];
                 
                 // The existence of image isn't guaranteed
-                if ( image ) {
+                if (image) {
                     RHOfflineCache *item = [RHOfflineCache newOrExistingEntityWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
                     
                     NSString *ext = [url pathExtension];
