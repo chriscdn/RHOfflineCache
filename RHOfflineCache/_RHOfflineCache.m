@@ -3,21 +3,12 @@
 
 #import "_RHOfflineCache.h"
 
-const struct RHOfflineCacheAttributes RHOfflineCacheAttributes = {
-	.createDate = @"createDate",
-	.filename = @"filename",
-	.lastAccessDate = @"lastAccessDate",
-	.namespace = @"namespace",
-	.size = @"size",
-	.url = @"url",
-};
-
 @implementation RHOfflineCacheID
 @end
 
 @implementation _RHOfflineCache
 
-+ (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
++ (instancetype)insertInManagedObjectContext:(NSManagedObjectContext *)moc_ {
 	NSParameterAssert(moc_);
 	return [NSEntityDescription insertNewObjectForEntityForName:@"RHOfflineCache" inManagedObjectContext:moc_];
 }
@@ -63,7 +54,7 @@ const struct RHOfflineCacheAttributes RHOfflineCacheAttributes = {
 }
 
 - (void)setSizeValue:(int32_t)value_ {
-	[self setSize:[NSNumber numberWithInt:value_]];
+	[self setSize:@(value_)];
 }
 
 - (int32_t)primitiveSizeValue {
@@ -72,10 +63,31 @@ const struct RHOfflineCacheAttributes RHOfflineCacheAttributes = {
 }
 
 - (void)setPrimitiveSizeValue:(int32_t)value_ {
-	[self setPrimitiveSize:[NSNumber numberWithInt:value_]];
+	[self setPrimitiveSize:@(value_)];
 }
 
 @dynamic url;
 
+@end
+
+@implementation RHOfflineCacheAttributes 
++ (NSString *)createDate {
+	return @"createDate";
+}
++ (NSString *)filename {
+	return @"filename";
+}
++ (NSString *)lastAccessDate {
+	return @"lastAccessDate";
+}
++ (NSString *)namespace {
+	return @"namespace";
+}
++ (NSString *)size {
+	return @"size";
+}
++ (NSString *)url {
+	return @"url";
+}
 @end
 
