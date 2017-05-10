@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface _RHOfflineCache : RHManagedObject
 + (instancetype)insertInManagedObjectContext:(NSManagedObjectContext *)moc_;
 + (NSString*)entityName;
-+ (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
++ (nullable NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 @property (nonatomic, readonly, strong) RHOfflineCacheID *objectID;
 
 @property (nonatomic, strong) NSDate* createDate;
@@ -48,14 +48,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)primitiveFilename;
 - (void)setPrimitiveFilename:(NSString*)value;
 
-- (NSDate*)primitiveLastAccessDate;
-- (void)setPrimitiveLastAccessDate:(NSDate*)value;
+- (nullable NSDate*)primitiveLastAccessDate;
+- (void)setPrimitiveLastAccessDate:(nullable NSDate*)value;
 
-- (NSString*)primitiveNamespace;
-- (void)setPrimitiveNamespace:(NSString*)value;
+- (nullable NSString*)primitiveNamespace;
+- (void)setPrimitiveNamespace:(nullable NSString*)value;
 
-- (NSNumber*)primitiveSize;
-- (void)setPrimitiveSize:(NSNumber*)value;
+- (nullable NSNumber*)primitiveSize;
+- (void)setPrimitiveSize:(nullable NSNumber*)value;
 
 - (int32_t)primitiveSizeValue;
 - (void)setPrimitiveSizeValue:(int32_t)value_;
