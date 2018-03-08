@@ -23,8 +23,8 @@
 //  THE SOFTWARE.
 //
 
-#define kRHOfflineCacheInsert @"RHOfflineCacheInsert"
-#define kRHOfflineCacheDelete @"RHOfflineCacheDelete"
+// #define kRHOfflineCacheInsert @"RHOfflineCacheInsert"
+// #define kRHOfflineCacheDelete @"RHOfflineCacheDelete"
 
 #import "_RHOfflineCache.h"
 
@@ -36,7 +36,5 @@
 -(NSURL *)localURL;
 -(UIImage *)image;
 -(BOOL)cachedFileExists;
-
--(void)buzz;
 
 @end

@@ -56,7 +56,7 @@
         
         // TODO: error handling
         [[NSFileManager defaultManager] createDirectoryAtPath:[self cachePath] withIntermediateDirectories:YES attributes:nil error:nil];
-	}
+    }
 }
 
 +(NSString *)modelName {
@@ -64,14 +64,14 @@
 }
 
 +(NSString *)UUID {
-	CFUUIDRef theUUID = CFUUIDCreate(NULL);
-	CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-	CFRelease(theUUID);
-	return [(__bridge NSString *)string lowercaseString];
+    CFUUIDRef theUUID = CFUUIDCreate(NULL);
+    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
+    CFRelease(theUUID);
+    return [(__bridge NSString *)string lowercaseString];
 }
 
 +(NSString *)cachePath {
-	return [[[self managedObjectContextManager] applicationDocumentsDirectory] stringByAppendingPathComponent:@"rhofflinecache"];
+    return [[[self managedObjectContextManager] applicationDocumentsDirectory] stringByAppendingPathComponent:@"rhofflinecache"];
 }
 
 -(NSString *)fullPath {
@@ -79,15 +79,15 @@
 }
 
 -(NSURL *)localURL {
-	return [NSURL fileURLWithPath:[self fullPath]];
+    return [NSURL fileURLWithPath:[self fullPath]];
 }
 
 -(UIImage *)image {
-	return [UIImage imageWithContentsOfFile:[self fullPath]];
+    return [UIImage imageWithContentsOfFile:[self fullPath]];
 }
 
 -(BOOL)cachedFileExists {
-	return [[NSFileManager defaultManager] fileExistsAtPath:self.fullPath];
+    return [[NSFileManager defaultManager] fileExistsAtPath:self.fullPath];
 }
 
 -(void)awakeFromFetch {
@@ -97,18 +97,12 @@
 
 -(void)awakeFromInsert {
     [super awakeFromInsert];
-	[self setCreateDate:[NSDate date]];
-	[self setLastAccessDate:[NSDate date]];
-}
-
--(void)buzz {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kRHOfflineCacheInsert object:self];
+    [self setCreateDate:[NSDate date]];
+    [self setLastAccessDate:[NSDate date]];
 }
 
 -(void)prepareForDeletion {
     [super prepareForDeletion];
-	
-    [[NSNotificationCenter defaultCenter] postNotificationName:kRHOfflineCacheDelete object:self];
     
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:[self fullPath] error:&error];

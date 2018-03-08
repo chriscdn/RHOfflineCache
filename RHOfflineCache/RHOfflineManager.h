@@ -30,13 +30,15 @@ typedef void (^RHOfflineManagerSuccessBlock)(NSURL *localURL);
 typedef void (^RHOfflineImageManagerSuccessBlock)(UIImage *image);
 typedef void (^RHOfflineManagerErrorBlock)(NSError *error);
 
+#import <PromiseKit/PromiseKit.h>
+
 @interface RHOfflineManager : NSObject
 
 +(RHOfflineManager *)sharedInstance;
 
 -(NSNumber *)cacheSize;
 -(NSString *)cacheSizeMB;
--(BOOL)isCacheable:(NSString *)url;
+//-(BOOL)isCacheable:(NSString *)url;
 -(void)flushCache;
 
 -(NSString *)sizeWithURL:(NSString *)url;
@@ -48,30 +50,7 @@ typedef void (^RHOfflineManagerErrorBlock)(NSError *error);
 
 -(NSArray *)cachedURLs;
 
--(NSURL *)localURLWithURL:(NSString *)url;
-
--(NSURL *)localURLWithURL:(NSString *)url
-                 progress:(RHOfflineManagerProgressBlock)progress
-                  success:(RHOfflineManagerSuccessBlock)success
-                  failure:(RHOfflineManagerErrorBlock)failure;
-
--(NSURL *)localURLWithURL:(NSString *)url
-                namespace:(NSString *)namespace
-                 progress:(RHOfflineManagerProgressBlock)progress
-                  success:(RHOfflineManagerSuccessBlock)success
-                  failure:(RHOfflineManagerErrorBlock)failure;
-
--(UIImage *)imageWithURL:(NSString *)url
-                 success:(RHOfflineImageManagerSuccessBlock)success
-                 failure:(RHOfflineManagerErrorBlock)failure;
-
--(UIImage *)imageWithURL:(NSString *)url
-             placeholder:(UIImage *)placeholder
-                 success:(RHOfflineImageManagerSuccessBlock)success
-                 failure:(RHOfflineManagerErrorBlock)failure;
-
--(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView;
-
--(void)setURL:(NSString *)url toImageView:(UIImageView *)imageView placeholder:(UIImage *)placeholder;
+-(UIImage *)fetchImageFromCache:(NSString *)url;
+-(AnyPromise *)imagePromiseWithURL:(NSString *)url;
 
 @end
