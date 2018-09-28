@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14315.18" systemVersion="17G65" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="RHOfflineCache" representedClassName="RHOfflineCache" syncable="YES">
-        <attribute name="createDate" attributeType="Date" syncable="YES"/>
+        <attribute name="createDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="filename" attributeType="String" syncable="YES"/>
-        <attribute name="lastAccessDate" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="namespace" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="size" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="url" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="keepLonger" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="lastAccessDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="size" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="url" attributeType="String" syncable="YES"/>
+        <fetchIndex name="byUrlIndex">
+            <fetchIndexElement property="url" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="url"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <elements>
         <element name="RHOfflineCache" positionX="0" positionY="0" width="128" height="135"/>

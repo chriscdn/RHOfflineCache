@@ -29,6 +29,11 @@
 + (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
 
+	if ([key isEqualToString:@"keepLongerValue"]) {
+		NSSet *affectingKey = [NSSet setWithObject:@"keepLonger"];
+		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
+		return keyPaths;
+	}
 	if ([key isEqualToString:@"sizeValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"size"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -42,9 +47,27 @@
 
 @dynamic filename;
 
-@dynamic lastAccessDate;
+@dynamic keepLonger;
 
-@dynamic namespace;
+- (BOOL)keepLongerValue {
+	NSNumber *result = [self keepLonger];
+	return [result boolValue];
+}
+
+- (void)setKeepLongerValue:(BOOL)value_ {
+	[self setKeepLonger:@(value_)];
+}
+
+- (BOOL)primitiveKeepLongerValue {
+	NSNumber *result = [self primitiveKeepLonger];
+	return [result boolValue];
+}
+
+- (void)setPrimitiveKeepLongerValue:(BOOL)value_ {
+	[self setPrimitiveKeepLonger:@(value_)];
+}
+
+@dynamic lastAccessDate;
 
 @dynamic size;
 
@@ -77,11 +100,11 @@
 + (NSString *)filename {
 	return @"filename";
 }
++ (NSString *)keepLonger {
+	return @"keepLonger";
+}
 + (NSString *)lastAccessDate {
 	return @"lastAccessDate";
-}
-+ (NSString *)namespace {
-	return @"namespace";
 }
 + (NSString *)size {
 	return @"size";

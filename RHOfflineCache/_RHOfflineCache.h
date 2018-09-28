@@ -26,9 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString* filename;
 
-@property (nonatomic, strong, nullable) NSDate* lastAccessDate;
+@property (nonatomic, strong) NSNumber* keepLonger;
 
-@property (nonatomic, strong, nullable) NSString* namespace;
+@property (atomic) BOOL keepLongerValue;
+- (BOOL)keepLongerValue;
+- (void)setKeepLongerValue:(BOOL)value_;
+
+@property (nonatomic, strong, nullable) NSDate* lastAccessDate;
 
 @property (nonatomic, strong, nullable) NSNumber* size;
 
@@ -48,11 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)primitiveFilename;
 - (void)setPrimitiveFilename:(NSString*)value;
 
+- (NSNumber*)primitiveKeepLonger;
+- (void)setPrimitiveKeepLonger:(NSNumber*)value;
+
+- (BOOL)primitiveKeepLongerValue;
+- (void)setPrimitiveKeepLongerValue:(BOOL)value_;
+
 - (nullable NSDate*)primitiveLastAccessDate;
 - (void)setPrimitiveLastAccessDate:(nullable NSDate*)value;
-
-- (nullable NSString*)primitiveNamespace;
-- (void)setPrimitiveNamespace:(nullable NSString*)value;
 
 - (nullable NSNumber*)primitiveSize;
 - (void)setPrimitiveSize:(nullable NSNumber*)value;
@@ -68,8 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RHOfflineCacheAttributes: NSObject 
 + (NSString *)createDate;
 + (NSString *)filename;
++ (NSString *)keepLonger;
 + (NSString *)lastAccessDate;
-+ (NSString *)namespace;
 + (NSString *)size;
 + (NSString *)url;
 @end

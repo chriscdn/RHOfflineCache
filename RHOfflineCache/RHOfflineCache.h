@@ -31,10 +31,8 @@
 @interface RHOfflineCache : _RHOfflineCache
 
 +(NSString *)UUID;
-
 -(NSString *)fullPath;
 -(NSURL *)localURL;
 -(UIImage *)image;
--(BOOL)cachedFileExists;
 
 @end

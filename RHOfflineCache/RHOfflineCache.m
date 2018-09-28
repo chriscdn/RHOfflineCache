@@ -36,7 +36,7 @@
     // http://www.mikeash.com/pyblog/friday-qa-2009-05-22-objective-c-class-loading-and-initialization.html
     if (self == [RHOfflineCache class] ) {
         
-        const static NSInteger schemaVersion = 3;
+        const static NSInteger schemaVersion = 7;
         
         NSString *key = [NSString stringWithFormat:@"RHOfflineManagerSchemaVersion-%@", [self modelName]];
         NSInteger version = [[NSUserDefaults standardUserDefaults] integerForKey:key];
@@ -86,9 +86,9 @@
     return [UIImage imageWithContentsOfFile:[self fullPath]];
 }
 
--(BOOL)cachedFileExists {
-    return [[NSFileManager defaultManager] fileExistsAtPath:self.fullPath];
-}
+//-(BOOL)cachedFileExists {
+//    return [[NSFileManager defaultManager] fileExistsAtPath:self.fullPath];
+//}
 
 -(void)awakeFromFetch {
     [super awakeFromFetch];

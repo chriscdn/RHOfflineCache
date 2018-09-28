@@ -25,11 +25,6 @@
 
 #define kOfflineImage [UIImage imageNamed:@"offline_image"]
 
-typedef void (^RHOfflineManagerProgressBlock)(float progress);
-typedef void (^RHOfflineManagerSuccessBlock)(NSURL *localURL);
-typedef void (^RHOfflineImageManagerSuccessBlock)(UIImage *image);
-typedef void (^RHOfflineManagerErrorBlock)(NSError *error);
-
 #import <PromiseKit/PromiseKit.h>
 
 @interface RHOfflineManager : NSObject
@@ -44,13 +39,15 @@ typedef void (^RHOfflineManagerErrorBlock)(NSError *error);
 -(NSString *)sizeWithURL:(NSString *)url;
 
 -(void)deleteWithURL:(NSString *)url;
--(BOOL)isDownloading:(NSString *)url;
--(BOOL)isDownloaded:(NSString *)url;
--(BOOL)isCached:(NSString *)url;
+//-(BOOL)isDownloading:(NSString *)url;
+//-(BOOL)isDownloaded:(NSString *)url;
+//-(BOOL)isCached:(NSString *)url;
 
 -(NSArray *)cachedURLs;
 
 -(UIImage *)fetchImageFromCache:(NSString *)url;
+
 -(AnyPromise *)imagePromiseWithURL:(NSString *)url;
+-(AnyPromise *)imagePromiseWithURL:(NSString *)url keepLonger:(BOOL)keepLonger;
 
 @end

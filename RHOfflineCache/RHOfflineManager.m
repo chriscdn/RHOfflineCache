@@ -71,25 +71,31 @@
 }
 
 -(void)purgeOldStuff {
-    NSDate *fourWeeksAgo = [NSDate dateWithTimeIntervalSinceNow:-2419200];
-    NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"lastAccessDate < %@", fourWeeksAgo]];
-    
-    for (RHOfflineCache *item in items) {
-        [item delete];
-    }
-    
+    NSDate *twoWeeksAgo = [NSDate dateWithTimeIntervalSinceNow:-1209600];
+    NSDate *halfYear = [NSDate dateWithTimeIntervalSinceNow:-15724800];
+    NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"(lastAccessDate < %@ and keepLonger=%@) or (lastAccessDate < %@ and keepLonger=%@)", twoWeeksAgo, @NO,  halfYear, @YES]];
+    [items makeObjectsPerformSelector:@selector(delete)];
+
     [RHOfflineCache commit];
 }
 
 -(void)flushCache {
+    //    NSDate *weekAgo = [NSDate dateWithTimeIntervalSinceNow:0];
+    //    NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"lastAccessDate < %@ and keep=%@", weekAgo, @NO]];
+    //
+    //    [items makeObjectsPerformSelector:@selector(delete)];
+    //
+    //    [RHOfflineCache commit];
+    
     [self.memoryCache removeAllObjects];
+    // [RHOfflineCache deleteWithPredicate:[NSPredicate predicateWithFormat:@"keep=%@", @NO]];
     [RHOfflineCache deleteAll];
     [RHOfflineCache commit];
 }
 
--(BOOL)isDownloading:(NSString *)url {
-    return ([self.operations objectForKey:url] != nil);
-}
+//-(BOOL)isDownloading:(NSString *)url {
+//    return ([self.operations objectForKey:url] != nil);
+//}
 
 -(NSArray *)cachedURLs {
     return [RHOfflineCache distinctValuesWithAttribute:@"url" predicate:nil];
@@ -120,18 +126,18 @@
     [self.memoryCache removeObjectForKey:url];
 }
 
--(BOOL)isDownloaded:(NSString *)url {
-    return [self isCached:url];
-}
+//-(BOOL)isDownloaded:(NSString *)url {
+//    return [self isCached:url];
+//}
 
--(BOOL)isCached:(NSString *)url {
-    if ([self.memoryCache objectForKey:url] != nil) {
-        return YES;
-    } else {
-        NSUInteger count = [RHOfflineCache countWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
-        return (count > 0);
-    }
-}
+//-(BOOL)isCached:(NSString *)url {
+//    if ([self.memoryCache objectForKey:url] != nil) {
+//        return YES;
+//    } else {
+//        NSUInteger count = [RHOfflineCache countWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
+//        return (count > 0);
+//    }
+//}
 
 -(UIImage *)fetchImageFromCache:(NSString *)url {
     
@@ -141,39 +147,36 @@
         
         RHOfflineCache *item = [RHOfflineCache getWithPredicate:[NSPredicate predicateWithFormat:@"url=%@", url]];
         
-        if ([item cachedFileExists]) {
-            
-            image = item.image;
-            
-            if (image) {
-                item.lastAccessDate = [NSDate date];
-                [self.memoryCache setObject:image forKey:url];
-                [RHOfflineCache commit];
-            } else {
-                // something went wrong, delete it
-                [self deleteWithURL:url];
-            }
+        //      if ([item cachedFileExists]) {
+        
+        image = item.image;
+        
+        if (image) {
+            item.lastAccessDate = [NSDate date];
+            [self.memoryCache setObject:image forKey:url];
+            [RHOfflineCache commit];
+        } else {
+            // something went wrong, delete it
+            [self deleteWithURL:url];
         }
+        // }
     }
     
     return image;
     
 }
 
-
 -(AnyPromise *)imagePromiseWithURL:(NSString *)url {
-    
+    return [self imagePromiseWithURL:url keepLonger:NO];
+}
+
+-(AnyPromise *)imagePromiseWithURL:(NSString *)url keepLonger:(BOOL)keepLonger {
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         
-        if ([self isCached:url]) {
-            UIImage *image = [self fetchImageFromCache:url];
-            
-            if (image) {
-                resolve(image);
-            } else {
-                resolve([NSError errorWithDomain:@"com.trackmytour.error" code:0 userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"An unknown error occurred.", nil)}]);
-            }
-            
+        UIImage *image = [self fetchImageFromCache:url];
+        
+        if (image) {
+            resolve(image);
         } else {
             
             NSURLRequest *nsurlrequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -181,7 +184,7 @@
             
             // disable caching
             [operation setCacheResponseBlock:nil];
-
+            
             [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, NSData *responseObject) {
                 
                 UIImage *image = [UIImage imageWithData:responseObject];
@@ -193,13 +196,21 @@
                         [item setFilename:[RHOfflineCache UUID]];
                         [item setUrl:url];
                         [item setSize:[NSNumber numberWithInteger:responseObject.length]];
+                        [item setKeepLongerValue:keepLonger];
                         
-                        NSError *error;
-                        [responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error];
+                        NSError *error1;
+                        [responseObject writeToFile:[item fullPath] options:NSDataWritingAtomic error:&error1];
+                       
                         [self addSkipBackupAttributeToItemAtURL:[item localURL]];
                         
-                        // Only commit once the file is safe on the filesystem.
-                        [RHOfflineCache commit];
+                        NSError *error2 = [RHOfflineCache commit];
+                        
+                        // if either operation failed then give up.
+                        if (error1 || error2) {
+                            [item delete];
+                            // [RHOfflineCache commit];
+                        }
+
                     });
                     
                     resolve(image);
@@ -232,7 +243,8 @@
     
     NSError *error = nil;
     BOOL success = [URL setResourceValue:@YES
-                                  forKey:NSURLIsExcludedFromBackupKey error: &error];
+                                  forKey:NSURLIsExcludedFromBackupKey
+                                   error: &error];
     if(!success){
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);
     }
@@ -240,4 +252,3 @@
 }
 
 @end
-
