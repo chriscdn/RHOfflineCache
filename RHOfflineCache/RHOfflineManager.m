@@ -72,8 +72,8 @@
 
 -(void)purgeOldStuff {
     NSDate *twoWeeksAgo = [NSDate dateWithTimeIntervalSinceNow:-1209600];
-    NSDate *halfYear = [NSDate dateWithTimeIntervalSinceNow:-15724800];
-    NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"(lastAccessDate < %@ and keepLonger=%@) or (lastAccessDate < %@ and keepLonger=%@)", twoWeeksAgo, @NO,  halfYear, @YES]];
+    NSDate *year = [NSDate dateWithTimeIntervalSinceNow:-31536000];
+    NSArray *items = [RHOfflineCache fetchWithPredicate:[NSPredicate predicateWithFormat:@"(lastAccessDate < %@ and keepLonger=%@) or (lastAccessDate < %@ and keepLonger=%@)", twoWeeksAgo, @NO,  year, @YES]];
     [items makeObjectsPerformSelector:@selector(delete)];
 
     [RHOfflineCache commit];
